@@ -2,7 +2,7 @@ package httputils
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/ismailozdel/core/config"
+	"github.com/ismailozdel/core2/config"
 )
 
 type packageEnums struct {

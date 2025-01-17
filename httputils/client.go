@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	utils "github.com/ismailozdel/core"
+	utils "github.com/ismailozdel/core2"
 )
 
 /*

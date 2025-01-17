@@ -9,7 +9,7 @@ import (
 
 	_ "github.com/lib/pq"
 
-	"github.com/ismailozdel/core/config"
+	"github.com/ismailozdel/core2/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )

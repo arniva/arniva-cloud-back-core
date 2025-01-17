@@ -2,7 +2,7 @@ package middlewares
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/ismailozdel/core/database"
+	"github.com/ismailozdel/core2/database"
 )
 
 func databaseSelect(c *fiber.Ctx) error {
