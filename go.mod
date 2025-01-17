@@ -1,4 +1,4 @@
-module github.com/ismailozdel/core
+module github.com/ismailozdel/core2
 
 go 1.23.1
 
