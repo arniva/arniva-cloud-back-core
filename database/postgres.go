@@ -121,7 +121,7 @@ func AutoMigrate(models ...interface{}) error {
 	}
 
 	// Model yapılarını buraya ekleyin
-	if err := DB.AutoMigrate(models); err != nil {
+	if err := DB.AutoMigrate(models...); err != nil {
 		return &DBError{Message: ErrorAutoMigrate, Err: err}
 	}
 	return nil

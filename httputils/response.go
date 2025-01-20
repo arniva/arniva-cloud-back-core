@@ -49,10 +49,10 @@ func NewApiError(statusCode int, code int, message string) *ApiError {
 
 // Response standart API yanıt yapısı
 type Response struct {
+	Code       int         `json:"code"`
 	Message    string      `json:"message"`
 	Data       interface{} `json:"data"`
 	StatusCode int         `json:"-"`
-	Code       int         `json:"code"`
 	Meta       Meta        `json:"meta"`
 }
 type Meta struct {
