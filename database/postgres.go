@@ -146,6 +146,7 @@ func AddFilter(query map[string]interface{}) func(db *gorm.DB) *gorm.DB {
 	filter.WriteString("1=1")
 
 	for key, value := range query {
+		//value tiplerine gore sorgu ayarlancak/ ilike, ve json gelcek, < > bunlar da gelcek
 		filter.WriteString(fmt.Sprintf(" AND %s = ?", key))
 		params = append(params, value)
 	}
