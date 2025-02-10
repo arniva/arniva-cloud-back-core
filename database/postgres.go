@@ -156,3 +156,20 @@ func AddFilter(query map[string]interface{}) func(db *gorm.DB) *gorm.DB {
 	}
 
 }
+
+func AddFilter2[T any](query map[string]interface{}) func(db *gorm.DB) *gorm.DB {
+	var filter strings.Builder
+	var params []interface{}
+	filter.WriteString("1=1")
+
+	for key, value := range query {
+		//value tiplerine gore sorgu ayarlancak/ ilike, ve json gelcek, < > bunlar da gelcek
+		filter.WriteString(fmt.Sprintf(" AND %s = ?", key))
+		params = append(params, value)
+	}
+
+	return func(db *gorm.DB) *gorm.DB {
+		return db.Where(gorm.Expr(filter.String(), params...))
+	}
+
+}
