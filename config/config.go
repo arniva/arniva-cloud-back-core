@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	utils "github.com/ismailozdel/core2"
+	"github.com/ismailozdel/core2/utils"
 	"github.com/joho/godotenv"
 )
 

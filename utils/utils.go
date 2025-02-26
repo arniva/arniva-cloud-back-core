@@ -8,3 +8,7 @@ func GetEnv(key, defaultValue string) string {
 	}
 	return defaultValue
 }
+
+func Ptr[T any](v T) *T {
+	return &v
+}
