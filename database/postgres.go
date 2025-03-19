@@ -1,7 +1,6 @@
 package database
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 	"strings"
@@ -45,20 +44,13 @@ func (e *DBError) Error() string {
 
 func Connect(config *config.DBConfig) error {
 	dsn := config.GetDSN()
-	sqlDB, err := sql.Open("postgres", dsn)
-	if err != nil {
-		return &DBError{Message: ErrorConnectDB, Err: err}
-	}
-	sqlDB.SetMaxIdleConns(10)
-	sqlDB.SetConnMaxIdleTime(3 * time.Second)
-	sqlDB.SetMaxOpenConns(10)
-	log.Println(sqlDB.Stats().MaxIdleClosed)
-	log.Println(sqlDB.Stats().MaxIdleTimeClosed)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		DisableForeignKeyConstraintWhenMigrating: true,
 		AllowGlobalUpdate:                        true,
-		ConnPool:                                 sqlDB,
 	})
+	sqlDb, _ := db.DB()
+	sqlDb.SetMaxIdleConns(2)
+	sqlDb.SetConnMaxIdleTime(1 * time.Hour)
 
 	if err != nil {
 		return &DBError{Message: ErrorConnectDB, Err: err}
