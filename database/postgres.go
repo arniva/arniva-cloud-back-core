@@ -1,8 +1,11 @@
 package database
 
 import (
+	"bufio"
 	"fmt"
 	"log"
+	"os"
+	"reflect"
 	"strings"
 	"time"
 
@@ -164,4 +167,95 @@ func AddFilter2[T any](query map[string]interface{}) func(db *gorm.DB) *gorm.DB 
 		return db.Where(gorm.Expr(filter.String(), params...))
 	}
 
+}
+
+func InsertSeedData[T any](data []T) error {
+	if DB == nil {
+		return &DBError{Message: ErrorConnectDB}
+	}
+
+	ids := make([]*string, len(data))
+	//if data has id field, get all ids
+	for i, v := range data {
+		val := reflect.ValueOf(v)
+		if val.Kind() == reflect.Ptr {
+			val = val.Elem()
+		}
+		if val.Kind() == reflect.Struct {
+			field := val.FieldByName("ID")
+			if field.IsValid() {
+				fmt.Println(field.String())
+				ids[i] = field.Interface().(*string)
+			}
+		}
+	}
+	fmt.Println(ids)
+
+	// get exist ids in db
+	var existIds []string
+	if err := DB.Model(data).Where("id IN ?", ids).Pluck("id", &existIds).Error; err != nil {
+		return &DBError{Message: "Seed data eklenirken hata oluştu", Err: err}
+	}
+	fmt.Println(existIds)
+
+	// remove exist ids from data
+	for _, id := range existIds {
+		for i, v := range data {
+			val := reflect.ValueOf(v)
+			if val.Kind() == reflect.Ptr {
+				val = val.Elem()
+			}
+			if val.Kind() == reflect.Struct {
+				field := val.FieldByName("ID")
+				if field.IsValid() && *field.Interface().(*string) == id {
+					data = append(data[:i], data[i+1:]...)
+					break
+				}
+			}
+		}
+	}
+	if len(data) == 0 {
+		fmt.Println("No data to insert")
+		return nil
+	}
+	// insert data
+	if err := DB.Create(data).Error; err != nil {
+		return &DBError{Message: "Seed data eklenirken hata oluştu", Err: err}
+	}
+
+	return nil
+}
+
+func InsertSeedDataFromSQL(path string) error {
+	if DB == nil {
+		return &DBError{Message: ErrorConnectDB}
+	}
+
+	sqlFile, err := os.Open(path)
+	if err != nil {
+		return &DBError{Message: "Seed data dosyası açılamadı",
+
+			Err: err}
+	}
+	defer sqlFile.Close()
+
+	scanner := bufio.NewScanner(sqlFile)
+	sqltext := ""
+
+	if err := scanner.Err(); err != nil {
+		return &DBError{Message: "Seed data dosyası okunurken hata oluştu", Err: err}
+	}
+	for scanner.Scan() {
+		line := scanner.Text()
+		if line == "" {
+			continue
+		}
+		sqltext += line
+	}
+
+	if err := DB.Exec(sqltext).Error; err != nil {
+		return &DBError{Message: "Seed data insert edilirken hata oluştu", Err: err}
+	}
+
+	return nil
 }

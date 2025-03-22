@@ -5,7 +5,6 @@ go 1.23.1
 require (
 	github.com/go-playground/validator/v10 v10.24.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
-	github.com/guregu/null/v5 v5.0.0
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
 	gorm.io/driver/postgres v1.5.11
