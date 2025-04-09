@@ -5,7 +5,7 @@ import "github.com/gofiber/fiber/v2"
 func filter(c *fiber.Ctx) error {
 	offset := c.QueryInt("offset")
 	limit := c.QueryInt("limit")
-	query := c.Query("query")
+	filter := c.Query("filter")
 
 	if offset < 0 {
 		offset = 0
@@ -19,7 +19,7 @@ func filter(c *fiber.Ctx) error {
 
 	c.Locals("offset", offset)
 	c.Locals("limit", limit)
-	c.Locals("query", query)
+	c.Locals("filter", filter)
 
 	return c.Next()
 }
