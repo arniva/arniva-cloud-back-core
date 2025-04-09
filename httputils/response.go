@@ -53,8 +53,9 @@ type Response struct {
 	Message    string      `json:"message"`
 	Data       interface{} `json:"data"`
 	StatusCode int         `json:"-"`
-	Meta       Meta        `json:"meta"`
+	Meta       *Meta       `json:"meta,omitempty"`
 }
+
 type Meta struct {
 	TotalRecord   int64 `json:"total_records"`
 	CurrentOffset int   `json:"current_offset"`
@@ -63,17 +64,27 @@ type Meta struct {
 
 // NewSuccessResponse başarılı yanıt oluşturur
 func NewSuccessResponse(data interface{}, meta ...Meta) *Response {
-	var m Meta
-	if len(meta) != 0 {
-		m = meta[0]
-	}
-	return &Response{
+	res := Response{
 		StatusCode: 200,
 		Message:    "",
 		Data:       data,
 		Code:       Enums.Code0,
-		Meta:       m,
+		Meta:       nil,
 	}
+
+	var m Meta
+	if len(meta) != 0 {
+		m = meta[0]
+		res = Response{
+			StatusCode: 200,
+			Message:    "",
+			Data:       data,
+			Code:       Enums.Code0,
+			Meta:       &m,
+		}
+	}
+
+	return &res
 }
 
 // NewErrorResponse hata yanıtı oluşturur

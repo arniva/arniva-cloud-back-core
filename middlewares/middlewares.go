@@ -7,5 +7,5 @@ func SetupMiddlewares(app *fiber.App) {
 
 	app.Use(parseToken)
 	app.Use(databaseSelect)
-	app.Use(pagination)
+	app.Use(filter)
 }

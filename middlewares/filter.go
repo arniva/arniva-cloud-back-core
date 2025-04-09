@@ -2,9 +2,11 @@ package middlewares
 
 import "github.com/gofiber/fiber/v2"
 
-func pagination(c *fiber.Ctx) error {
+func filter(c *fiber.Ctx) error {
 	offset := c.QueryInt("offset")
 	limit := c.QueryInt("limit")
+	query := c.Query("query")
+
 	if offset < 0 {
 		offset = 0
 	}
@@ -17,6 +19,7 @@ func pagination(c *fiber.Ctx) error {
 
 	c.Locals("offset", offset)
 	c.Locals("limit", limit)
+	c.Locals("query", query)
 
 	return c.Next()
 }

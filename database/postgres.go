@@ -122,10 +122,16 @@ func AutoMigrate(models ...interface{}) error {
 	return nil
 }
 
-func AddPaginationAndFilter(query map[string]interface{}, offset int, limit int) func(db *gorm.DB) *gorm.DB {
+func AddPaginationAndFilter(query string, params []interface{}, offset int, limit int) func(db *gorm.DB) *gorm.DB {
+
+	if query == "" {
+		return func(db *gorm.DB) *gorm.DB {
+			return db.Scopes(AddPagination(offset, limit))
+		}
+	}
 
 	return func(db *gorm.DB) *gorm.DB {
-		return db.Scopes(AddPagination(offset, limit), AddFilter(query))
+		return db.Scopes(AddPagination(offset, limit), AddFilter2(query, params))
 	}
 }
 
@@ -152,19 +158,10 @@ func AddFilter(query map[string]interface{}) func(db *gorm.DB) *gorm.DB {
 
 }
 
-func AddFilter2[T any](query map[string]interface{}) func(db *gorm.DB) *gorm.DB {
-	var filter strings.Builder
-	var params []interface{}
-	filter.WriteString("1=1")
-
-	for key, value := range query {
-		//value tiplerine gore sorgu ayarlancak/ ilike, ve json gelcek, < > bunlar da gelcek
-		filter.WriteString(fmt.Sprintf(" AND %s = ?", key))
-		params = append(params, value)
-	}
+func AddFilter2(query string, params []interface{}) func(db *gorm.DB) *gorm.DB {
 
 	return func(db *gorm.DB) *gorm.DB {
-		return db.Where(gorm.Expr(filter.String(), params...))
+		return db.Where(gorm.Expr(query, params...))
 	}
 
 }
@@ -226,8 +223,8 @@ func InsertSeedData[T any](data []T) error {
 	return nil
 }
 
-func InsertSeedDataFromSQL(path string) error {
-	if DB == nil {
+func InsertSeedDataFromSQLFile(db *gorm.DB, path string) error {
+	if db == nil {
 		return &DBError{Message: ErrorConnectDB}
 	}
 
@@ -253,7 +250,7 @@ func InsertSeedDataFromSQL(path string) error {
 		sqltext += line
 	}
 
-	if err := DB.Exec(sqltext).Error; err != nil {
+	if err := db.Exec(sqltext).Error; err != nil {
 		return &DBError{Message: "Seed data insert edilirken hata oluştu", Err: err}
 	}
 
