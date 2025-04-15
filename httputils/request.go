@@ -99,6 +99,13 @@ func ParseQueryToSql[T any](query string) (string, []interface{}, error) {
 	if sqlParts[len(sqlParts)-1] == "AND" || sqlParts[len(sqlParts)-1] == "OR" {
 		sqlParts = sqlParts[:len(sqlParts)-1]
 	}
+
+	for i, val := range values {
+		if chars, ok := val.(string); ok {
+			values[i] = strings.ReplaceAll(chars, ";", " ")
+		}
+	}
+
 	return strings.Join(sqlParts, " "), values, nil
 }
 
