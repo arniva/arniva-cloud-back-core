@@ -129,6 +129,11 @@ func AddPaginationAndFilter(query string, params []interface{}, offset int, limi
 			return db.Scopes(AddPagination(offset, limit))
 		}
 	}
+	if limit == 0 || offset == 0 {
+		return func(db *gorm.DB) *gorm.DB {
+			return db.Scopes(AddFilter2(query, params))
+		}
+	}
 
 	return func(db *gorm.DB) *gorm.DB {
 		return db.Scopes(AddPagination(offset, limit), AddFilter2(query, params))

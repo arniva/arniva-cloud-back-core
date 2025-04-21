@@ -69,8 +69,13 @@ func ParseQueryToSql[T any](query string) (string, []interface{}, error) {
 			continue
 		}
 		if prevOperator == "" || prevOperator == "OR" || prevOperator == "AND" || prevOperator == "or" || prevOperator == "and" {
-			if _, ok := allowedFields[part]; !ok {
+			fieldType, ok := allowedFields[part]
+			if !ok {
 				return "", nil, fmt.Errorf("Invalid key: %s", part)
+			}
+			if strings.Contains(fieldType, "int") || strings.Contains(fieldType, "float") {
+				sqlParts = append(sqlParts, fmt.Sprintf("%s::text", part))
+				continue
 			}
 			sqlParts = append(sqlParts, part)
 			continue
@@ -102,7 +107,9 @@ func ParseQueryToSql[T any](query string) (string, []interface{}, error) {
 
 	for i, val := range values {
 		if chars, ok := val.(string); ok {
-			values[i] = strings.ReplaceAll(chars, ";", " ")
+			chars = strings.ReplaceAll(chars, ";", " ")
+			chars = strings.ReplaceAll(chars, "'", "")
+			values[i] = chars
 		}
 	}
 
