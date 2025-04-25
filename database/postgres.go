@@ -123,7 +123,11 @@ func AutoMigrate(models ...interface{}) error {
 }
 
 func AddPaginationAndFilter(query string, params []interface{}, offset int, limit int) func(db *gorm.DB) *gorm.DB {
-
+	if query == "" && limit == 0 && offset == 0 {
+		return func(db *gorm.DB) *gorm.DB {
+			return db
+		}
+	}
 	if query == "" {
 		return func(db *gorm.DB) *gorm.DB {
 			return db.Scopes(AddPagination(offset, limit))
