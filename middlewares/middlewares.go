@@ -8,4 +8,5 @@ func SetupMiddlewares(app *fiber.App) {
 	app.Use(parseToken)
 	app.Use(databaseSelect)
 	app.Use(filter)
+	app.Use(sort)
 }

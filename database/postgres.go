@@ -175,6 +175,16 @@ func AddFilter2(query string, params []interface{}) func(db *gorm.DB) *gorm.DB {
 
 }
 
+// order: []string{"kodu desc", "adi asc"}
+func AddSort(order []string, db *gorm.DB) *gorm.DB {
+	if len(order) != 0 {
+		for _, o := range order {
+			db = db.Order(o)
+		}
+	}
+	return db
+}
+
 func InsertSeedData[T any](data []T) error {
 	if DB == nil {
 		return &DBError{Message: ErrorConnectDB}

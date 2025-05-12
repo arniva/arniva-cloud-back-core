@@ -144,6 +144,28 @@ func extractFields(modelType reflect.Type, fields map[string]string) {
 	}
 }
 
+func Sort[T any](sortParams string) []string {
+	allowedFields := extractAllowedFields[T]()
+	orders := make([]string, 0)
+	if sortParams != "" {
+		sorts := strings.Split(sortParams, ",")
+		for _, sort := range sorts {
+			parts := strings.Split(sort, " ")
+			if len(parts) == 2 {
+				field := parts[0]
+				direction := strings.ToLower(parts[1])
+				if _, exists := allowedFields[field]; exists && (direction == "asc" || direction == "desc") {
+					orders = append(orders, field+" "+direction)
+				}
+			}
+		}
+	} else {
+		// Varsayılan sıralama
+		orders = append(orders, "id asc")
+	}
+	return orders
+}
+
 func parseKey(k string) (string, string) {
 	validOps := []string{"<>", ">", "<"}
 	for _, op := range validOps {
