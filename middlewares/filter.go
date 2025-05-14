@@ -13,9 +13,10 @@ func filter(c *fiber.Ctx) error {
 
 	if limit == 0 || limit < 0 {
 		limit = 10
-	} else if limit > 100 {
-		limit = 100
 	}
+	// else if limit > 100 {
+	// 	limit = 100
+	// }
 
 	c.Locals("offset", offset)
 	c.Locals("limit", limit)
