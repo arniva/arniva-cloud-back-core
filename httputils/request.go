@@ -166,6 +166,33 @@ func Sort[T any](sortParams string) []string {
 	return orders
 }
 
+// id desc, must be only one order
+func ValidateSort[T any](sortParams string) error {
+	allowedFields := extractAllowedFields[T]()
+	orders := make([]string, 0)
+	if sortParams != "" {
+		sorts := strings.Split(sortParams, ",")
+		for _, sort := range sorts {
+			parts := strings.Split(sort, " ")
+			if len(parts) == 2 {
+				field := parts[0]
+				direction := strings.ToLower(parts[1])
+				if _, exists := allowedFields[field]; exists && (direction == "asc" || direction == "desc") {
+					orders = append(orders, field+" "+direction)
+				} else {
+					return fmt.Errorf("invalid sort field or direction: %s %s", field, direction)
+				}
+			}
+		}
+	} else {
+		return fmt.Errorf("sort params is empty")
+	}
+	if len(orders) > 1 {
+		return fmt.Errorf("only one order is allowed")
+	}
+	return nil
+}
+
 func parseKey(k string) (string, string) {
 	validOps := []string{"<>", ">", "<"}
 	for _, op := range validOps {
