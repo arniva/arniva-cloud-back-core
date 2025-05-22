@@ -57,9 +57,10 @@ type Response struct {
 }
 
 type Meta struct {
-	TotalRecord   int64 `json:"total_records"`
-	CurrentOffset int   `json:"current_offset"`
-	Limit         int   `json:"limit"`
+	TotalRecord   int64  `json:"total_records"`
+	CurrentOffset int    `json:"current_offset"`
+	Limit         int    `json:"limit"`
+	Sort          string `json:"sort"`
 }
 
 // NewSuccessResponse başarılı yanıt oluşturur
