@@ -1,4 +1,4 @@
-module github.com/ismailozdel/core2
+module github.com/arniva/arniva-cloud-back-core
 
 go 1.23.1
 
