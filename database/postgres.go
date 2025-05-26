@@ -11,7 +11,7 @@ import (
 
 	_ "github.com/lib/pq"
 
-	"github.com/ismailozdel/core2/config"
+	"github.com/arniva/arniva-cloud-back-core/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )

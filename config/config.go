@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ismailozdel/core2/utils"
+	"github.com/arniva/arniva-cloud-back-core/utils"
 	"github.com/joho/godotenv"
 )
 

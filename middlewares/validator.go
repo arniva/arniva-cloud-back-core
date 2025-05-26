@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/arniva/arniva-cloud-back-core/httputils"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
-	"github.com/ismailozdel/core2/httputils"
 )
 
 type XValidator struct {

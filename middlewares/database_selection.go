@@ -1,8 +1,8 @@
 package middlewares
 
 import (
+	"github.com/arniva/arniva-cloud-back-core/database"
 	"github.com/gofiber/fiber/v2"
-	"github.com/ismailozdel/core2/database"
 )
 
 func databaseSelect(c *fiber.Ctx) error {
