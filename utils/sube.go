@@ -44,6 +44,9 @@ func isValidUUID(u string) bool {
 			return false
 		}
 	}
+	if len(parts[0]) != 8 || len(parts[1]) != 4 || len(parts[2]) != 4 || len(parts[3]) != 4 || len(parts[4]) != 12 {
+		return false
+	}
 
 	for _, c := range u {
 		if !(('0' <= c && c <= '9') || ('a' <= c && c <= 'f') || ('A' <= c && c <= 'F') || c == '-') {
