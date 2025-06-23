@@ -276,7 +276,8 @@ func InsertSeedDataFromSQLFile(db *gorm.DB, path string) error {
 	return nil
 }
 
-func ModuleScope(module string, db *gorm.DB) *gorm.DB {
-	return db.Where("modul = ?", module)
-
+func ModuleScope(module string, db *gorm.DB) func(db *gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		return db.Where("modul = ?", module)
+	}
 }
