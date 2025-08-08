@@ -54,7 +54,7 @@ func ParseQueryToSql[T any](query string) (string, []interface{}, error) {
 	prevType := ""
 
 	// {key: tip}
-	for _, part := range parts {
+	for i, part := range parts {
 
 		if part == "(" || part == ")" {
 			sqlParts = append(sqlParts, part)
@@ -81,8 +81,10 @@ func ParseQueryToSql[T any](query string) (string, []interface{}, error) {
 				return "", nil, fmt.Errorf("Invalid key: %s", part)
 			}
 			if strings.Contains(fieldType, "int") || strings.Contains(fieldType, "float") {
-				sqlParts = append(sqlParts, fmt.Sprintf("%s::text", part))
-				continue
+				if parts[i+1] == "co" || parts[i+1] == "sw" || parts[i+1] == "ew" {
+					sqlParts = append(sqlParts, fmt.Sprintf("%s::text", part))
+					continue
+				}
 			}
 			if strings.Contains(fieldType, "datatypes.JSON") || strings.Contains(fieldType, "map[string]interface {}") {
 				// JSONB field
