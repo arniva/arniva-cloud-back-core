@@ -1,8 +1,8 @@
 package httputils
 
 import (
+	"github.com/arniva/arniva-cloud-back-core/config"
 	"github.com/gofiber/fiber/v2"
-	"github.com/ismailozdel/core2/config"
 )
 
 type packageEnums struct {

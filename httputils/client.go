@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/arniva/arniva-cloud-back-core/utils"
 	"github.com/gofiber/fiber/v2"
-	"github.com/ismailozdel/core2/utils"
 )
 
 /*
