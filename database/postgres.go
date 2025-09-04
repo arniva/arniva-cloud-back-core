@@ -284,6 +284,17 @@ func ModuleScope(module string, db *gorm.DB) func(db *gorm.DB) *gorm.DB {
 	}
 }
 
+func GetGroupCode(groupID, table, column string, db *gorm.DB) (string, error) {
+	var code string
+	sql := fmt.Sprintf("SELECT %s FROM %s WHERE id = ? LIMIT 1", column, table)
+
+	if err := db.Raw(sql, groupID).Scan(&code).Error; err != nil {
+		return "", fmt.Errorf("%s: %w", ErrorDBError, err)
+	}
+
+	return code, nil
+}
+
 func GetNewCode(tag, table, column string, db *gorm.DB) (string, error) {
 	lastCode, err := findLastCode(tag, table, column, db)
 	if err != nil {
