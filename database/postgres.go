@@ -2,10 +2,12 @@ package database
 
 import (
 	"bufio"
+	"database/sql"
 	"fmt"
 	"log"
 	"os"
 	"reflect"
+	"strconv"
 	"strings"
 	"time"
 
@@ -280,4 +282,77 @@ func ModuleScope(module string, db *gorm.DB) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		return db.Where("modul = ?", module)
 	}
+}
+
+func GetNewCode(tag, table, column string, db *gorm.DB) (string, error) {
+	lastCode, err := findLastCode(tag, table, column, db)
+	if err != nil {
+		return "", err
+	}
+
+	var kod string
+	if lastCode == "" {
+		kod = fmt.Sprintf("%s-000001", tag)
+	} else {
+		kod = incrementCode(lastCode)
+	}
+
+	for {
+		exists, err := isCodeExists(table, column, kod, db)
+		if err != nil {
+			return "", err
+		}
+		if !exists {
+			break
+		}
+		kod = incrementCode(kod)
+	}
+
+	return kod, nil
+}
+
+const (
+	ErrorDBError  = "Veritabanı hatası | "
+	codePadLength = 6
+)
+
+func findLastCode(tag, table, column string, db *gorm.DB) (string, error) {
+	tagPrefix := tag + "-"
+	searchTag := tag + "%"
+	var lastCode sql.NullString
+
+	query := fmt.Sprintf(
+		"SELECT '%s' || LPAD(MAX(CAST(REGEXP_REPLACE(%s, '\\D', '', 'g') AS INTEGER))::text, %d, '0') AS max_kod FROM %s WHERE %s ILIKE ? LIMIT 1",
+		tagPrefix, column, codePadLength, table, column,
+	)
+
+	if err := db.Raw(query, searchTag).Scan(&lastCode).Error; err != nil {
+		return "", fmt.Errorf("%s: %w", ErrorDBError, err)
+	}
+	return lastCode.String, nil
+}
+
+func isCodeExists(table, column, code string, db *gorm.DB) (bool, error) {
+	var exists int64
+	query := fmt.Sprintf("SELECT COUNT(1) FROM %s WHERE %s = ?", table, column)
+	if err := db.Raw(query, code).Scan(&exists).Error; err != nil {
+		return false, fmt.Errorf("%s: %w", ErrorDBError, err)
+	}
+	return exists > 0, nil
+}
+
+func incrementCode(code string) string {
+	parts := strings.Split(code, "-")
+	if len(parts) < 2 {
+		return code + "-000001"
+	}
+
+	last := parts[len(parts)-1]
+	number, err := strconv.Atoi(last)
+	if err != nil {
+		return code
+	}
+
+	parts[len(parts)-1] = fmt.Sprintf("%06d", number+1)
+	return strings.Join(parts, "-")
 }
