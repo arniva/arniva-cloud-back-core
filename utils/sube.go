@@ -8,7 +8,7 @@ import (
 	"gorm.io/datatypes"
 )
 
-func CheckSubeValid(sube datatypes.JSON) (bool, error) {
+func CheckSubeValid(sube datatypes.JSON, subeRequired bool) (bool, error) {
 	if sube == nil || len(sube) == 0 {
 		return false, errors.New("sube nil veya bos olamaz")
 	}
@@ -17,8 +17,8 @@ func CheckSubeValid(sube datatypes.JSON) (bool, error) {
 	if err := json.Unmarshal(sube, &subeList); err != nil {
 		return false, errors.New("sube JSON array formatinda olmali")
 	}
-	if len(subeList) == 0 {
-		return false, errors.New("sube bos olamaz")
+	if subeRequired && len(subeList) == 0 {
+		return false, errors.New("sube en az bir eleman icermeli")
 	}
 
 	for _, subeItem := range subeList {
