@@ -28,6 +28,7 @@ type DBConfig struct {
 	DBName   string
 	Port     string
 	SSLMode  string
+	Timezone string
 }
 
 var Cfg *Config
@@ -59,6 +60,7 @@ func Load() (*Config, error) {
 		DBName:   utils.GetEnv("DB_NAME", "mikroservis_template"),
 		Port:     utils.GetEnv("DB_PORT", "5432"),
 		SSLMode:  utils.GetEnv("DB_SSL_MODE", "disable"),
+		Timezone: utils.GetEnv("DB_TIMEZONE", "Europe/Istanbul"),
 	}
 
 	if dbConfig.Host == "" || dbConfig.User == "" || dbConfig.Password == "" || dbConfig.DBName == "" || dbConfig.Port == "" || dbConfig.SSLMode == "" {
@@ -73,12 +75,13 @@ func Load() (*Config, error) {
 }
 
 func (c *DBConfig) GetDSN() string {
-	return fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s",
+	return fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s TimeZone=%s",
 		c.Host,
 		c.User,
 		c.Password,
 		c.DBName,
 		c.Port,
 		c.SSLMode,
+		c.Timezone,
 	)
 }
