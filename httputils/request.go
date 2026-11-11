@@ -51,8 +51,10 @@ func ParseQueryToSql[T any](query string) (string, []interface{}, error) {
 	sqlParts = append(sqlParts, "1=1 AND")
 	var prevOperator string
 	allowedFields := extractAllowedFields[T]()
+	prevType := ""
+
 	// {key: tip}
-	for _, part := range parts {
+	for i, part := range parts {
 
 		if part == "(" || part == ")" {
 			sqlParts = append(sqlParts, part)
@@ -64,8 +66,13 @@ func ParseQueryToSql[T any](query string) (string, []interface{}, error) {
 				sqlParts = append(sqlParts, op)
 				continue
 			}
-			sqlParts = append(sqlParts, op)
 			prevOperator = part
+			if strings.Contains(prevType, "datatypes.JSON") {
+				op = "@>"
+				prevOperator = "eq"
+				prevType = ""
+			}
+			sqlParts = append(sqlParts, op)
 			continue
 		}
 		if prevOperator == "" || prevOperator == "OR" || prevOperator == "AND" || prevOperator == "or" || prevOperator == "and" {
@@ -74,8 +81,16 @@ func ParseQueryToSql[T any](query string) (string, []interface{}, error) {
 				return "", nil, fmt.Errorf("Invalid key: %s", part)
 			}
 			if strings.Contains(fieldType, "int") || strings.Contains(fieldType, "float") {
-				sqlParts = append(sqlParts, fmt.Sprintf("%s::text", part))
-				continue
+				if parts[i+1] == "co" || parts[i+1] == "sw" || parts[i+1] == "ew" {
+					sqlParts = append(sqlParts, fmt.Sprintf("%s::text", part))
+					continue
+				}
+			}
+			if strings.Contains(fieldType, "datatypes.JSON") || strings.Contains(fieldType, "map[string]interface {}") {
+				// JSONB field
+				prevType = fieldType
+				//sqlParts = append(sqlParts, fmt.Sprintf("%s->>", part))
+				//continue
 			}
 			sqlParts = append(sqlParts, part)
 			continue
