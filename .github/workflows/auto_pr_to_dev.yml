@@ -1,0 +1,23 @@
+name: Create Merge Request
+
+on:
+  push:
+    branches-ignore:
+      - main
+
+jobs:
+  create-merge-request:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.PR_SECRET }}
+          repository: ${{github.repository}}
+
+      - uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ secrets.PR_SECRET }}
+          branch: ${{ github.ref }}
+          base: ${{ github.ref == 'refs/heads/dev' && 'main' ||  'dev' }}
+          title:  ${{ github.ref == 'refs/heads/dev' && ' ' ||  github.actor }} - ${{ github.ref_name == 'dev' && 'oto pull request' || github.event.head_commit.message }} - from ${{ github.ref_name }} into ${{ github.ref == 'refs/heads/dev' && 'main' ||  'dev' }}
