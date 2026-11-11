@@ -54,6 +54,12 @@ type HTTPResponse[T any] struct {
 // sendRequest genel HTTP istek fonksiyonu
 func sendRequest[T any](method, url string, body interface{}, option Option) (*HTTPResponse[T], error) {
 	agent := fiber.AcquireAgent()
+	// Reuse olmadan Agent.Bytes() agent'ı havuza kendisi bırakır; aşağıdaki
+	// defer ile birlikte aynı Agent havuza iki kez girer ve eşzamanlı iki istek
+	// aynı nesneyi alıp birbirinin adresini, header'larını ve gövdesini ezer
+	// (yanlış yere giden istek, başka isteğin cevabı, nil pointer panic).
+	// Reuse ile agent yalnızca bu defer'de, tek kez havuza döner.
+	agent.Reuse()
 	defer fiber.ReleaseAgent(agent)
 
 	req := agent.Request()
